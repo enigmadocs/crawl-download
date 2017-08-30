@@ -12,6 +12,7 @@ extract:
   - step: Download the CSV for each month
     action: extract.source.http.DownloadFiles
 
+transform:
   - step: Remove header row
     action: transform.filter.FilterLines
     filter_list:
@@ -19,18 +20,6 @@ extract:
         patterns:
           - '^First.*$'
 
-  - step: Set the output filename using the name in the metadata
-    action: load.SetTableNameByMetadata
-    format: "{table_name}"
-    matchers:
-      table_name:
-        key: name
-        pattern: '(\w+\d{4}).csv$'
-
-  - step: Extract fields from CSV file
-    action: extract.formats.CSV.ReadRecords
-
-transform:
   - step: Set output schema
     action: transform.schema.SetSchema
     fields:
@@ -42,6 +31,17 @@ transform:
         type: integer
       - name: gender
         type: string
+
+  - step: Set the output filename using the name in the metadata
+    action: load.SetTableNameByMetadata
+    format: "{table_name}"
+    matchers:
+      table_name:
+        key: name
+        pattern: '(\w+\d{4}).csv$'
+
+  - step: Extract fields from CSV file
+    action: extract.formats.CSV.ReadRecords
 
 load:
   - step: Save locally
