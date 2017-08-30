@@ -1,0 +1,16 @@
+###
+# Parsefile for crawl-download
+# 2017-08-29
+###
+
+name: crawl-download
+description: "Crawl a web page and download files"
+maintainers:
+  - Peter Henderson <name@domain.com>
+version: "1.0.0"
+license: none
+source_urls:
+  - "http://example.org/example.csv"
+
+extract:
+  - data.yaml

@@ -1,0 +1,27 @@
+extract:
+  - step: Download the page containing the links
+    action: extract.source.http.DownloadFiles
+    fetch:
+      - 'https://rawgit.com/enigmadocs/crawl-download/master/crawlme.html'
+      - 'http://127.0.0.1:8080/crawlme.html'
+
+  - step: Extract the *2016.csv file download links
+    action: extract.formats.html.ExtractLink
+    criteria:
+      href: '^.*2016.csv$'
+
+  - step: Download the CSV for each month
+    action: extract.source.http.DownloadFiles
+
+load:
+  - step: Set the output filename using the name in the metadata
+    action: load.SetTableNameByMetadata
+    format: "{table_name}"
+    matchers:
+      table_name:
+        key: name
+        pattern: '(\w+\d{4}).csv$'
+
+  - step: Save locally
+    action: load.OutputCSV
+    repository: .
