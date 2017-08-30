@@ -3,7 +3,6 @@ extract:
     action: extract.source.http.DownloadFiles
     fetch:
       - 'https://rawgit.com/enigmadocs/crawl-download/master/crawlme.html'
-      - 'http://127.0.0.1:8080/crawlme.html'
 
   - step: Extract the *2016.csv file download links
     action: extract.formats.html.ExtractLink
@@ -13,7 +12,13 @@ extract:
   - step: Download the CSV for each month
     action: extract.source.http.DownloadFiles
 
-load:
+  - step: Remove header row
+    action: transform.filter.FilterLines
+    filter_list:
+      - line_number: 0
+        patterns:
+          - '^First.*$'
+
   - step: Set the output filename using the name in the metadata
     action: load.SetTableNameByMetadata
     format: "{table_name}"
@@ -22,6 +27,23 @@ load:
         key: name
         pattern: '(\w+\d{4}).csv$'
 
+  - step: Extract fields from CSV file
+    action: extract.formats.CSV.ReadRecords
+
+transform:
+  - step: Set output schema
+    action: transform.schema.SetSchema
+    fields:
+      - name: First
+        type: string
+      - name: Last
+        type: string
+      - name: EdCode
+        type: integer
+      - name: gender
+        type: string
+
+load:
   - step: Save locally
     action: load.OutputCSV
-    repository: .
+    repository: ./output
